@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// --------------------------------------
+// ENUMS
+// --------------------------------------
+
+enum Role {
+  PATIENT
+  PROFESSIONAL
+  ADMIN
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AppointmentStatus {
+  PENDING_PAYMENT   // Paciente está procesando el pago
+  SEARCHING         // Pago retenido/confirmado, buscando profesional disponible
+  ACCEPTED          // Un profesional tomó la consulta
+  IN_PROGRESS       // Videollamada de 30 min en curso
+  COMPLETED         // Sesión finalizada exitosamente
+  CANCELLED         // Cancelada por el paciente o por timeout de búsqueda
+  DISPUTED          // Reclamo iniciado
+}
+
+enum PaymentStatus {
+  PENDING
+  ESCROW            // Fondos retendidos hasta finalizar los 30 min
+  RELEASED          // Payout liberado al profesional
+  REFUNDED          // Reembolsado al paciente
+  FAILED
+}
+
+// --------------------------------------
+// MODELOS DE USUARIOS Y PERFILES
+// --------------------------------------
+
+model Profile {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique
+  email     String   @unique
+  fullName  String
+  role      Role     @default(PATIENT)
+  avatarUrl String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professionalProfile      ProfessionalProfile?
+  patientAppointments      Appointment[]        @relation("PatientAppointments")
+  professionalAppointments Appointment[]        @relation("ProfessionalAppointments")
+  reviewsGiven             Review[]             @relation("ReviewAuthor")
+  reviewsReceived          Review[]             @relation("ReviewTarget")
+
+  @@map("profiles")
+}
+
+model ProfessionalProfile {
+  id        String  @id @default(uuid())
+  profileId String  @unique
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // Datos Académicos y Legales
+  licenseNumber      String             @unique
+  collegeName        String             // Nombre del Colegio Profesional / Entidad Emisora
+  specialty          String             // Ej: Psicología Clínica, Psiquiatría, etc.
+  documentId         String             // DNI / CUIT / Pasaporte
+  documentUrl        String?            // Documento o foto de matrícula en Supabase Storage
+  verificationStatus VerificationStatus @default(PENDING)
+  verificationNotes  String?            // Feedback si es rechazado
+
+  // Disponibilidad en Tiempo Real (Uber-style)
+  isOnline Boolean @default(false)
+  isBusy   Boolean @default(false)
+
+  // Información Pública
+  bio        String?
+  hourlyRate Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("professional_profiles")
+}
+
+// --------------------------------------
+// CITAS Y SESIONES DE 30 MIN
+// --------------------------------------
+
+model Appointment {
+  id String @id @default(uuid())
+
+  patientId String
+  patient   Profile @relation("PatientAppointments", fields: [patientId], references: [id])
+
+  // Opcional al inicio mientras el sistema busca un profesional disponible
+  professionalId String?
+  professional   Profile? @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
+
+  status AppointmentStatus @default(PENDING_PAYMENT)
+
+  // Control de Tiempos y Duración
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  endedAt         DateTime?
+  durationMinutes Int       @default(30)
+
+  // Videollamada (Daily / Agora / LiveKit)
+  roomUrl          String?
+  roomTokenPatient String?
+  roomTokenPsycho  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transaction Transaction?
+  review      Review?
+
+  @@map("appointments")
+}
+
+// --------------------------------------
+// TRANSACCIONES Y ESCROW
+// --------------------------------------
+
+model Transaction {
+  id            String      @id @default(uuid())
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  amountTotal        Decimal @db.Decimal(10, 2)
+  platformFee        Decimal @db.Decimal(10, 2)
+  professionalPayout Decimal @db.Decimal(10, 2)
+
+  status           PaymentStatus @default(PENDING)
+  provider         String        // Ej: "MERCADOPAGO" o "STRIPE"
+  gatewayPaymentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+// --------------------------------------
+// RESEÑAS
+// --------------------------------------
+
+model Review {
+  id            String      @id @default(uuid())
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   Profile @relation("ReviewAuthor", fields: [authorId], references: [id])
+
+  targetId String
+  target   Profile @relation("ReviewTarget", fields: [targetId], references: [id])
+
+  rating  Int
+  comment String?
+
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}
