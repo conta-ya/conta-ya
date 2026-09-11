@@ -29,7 +29,8 @@ export async function updatePatientProfile(
         return { error: 'DNI, teléfono, género y fecha de nacimiento son obligatorios' }
     }
 
-    const birthday = new Date(birthdayStr)
+    // Se añade T00:00:00 para forzar el parseo local correcto
+    const birthday = new Date(`${birthdayStr}T00:00:00`)
     if (isNaN(birthday.getTime())) {
         return { error: 'Fecha de nacimiento inválida' }
     }

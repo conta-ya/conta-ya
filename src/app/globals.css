@@ -31,6 +31,14 @@
   /* emerald-50 (Fondos sutiles de radares/banners) */
 }
 
+/* Corrección de renderizado completo para Leaflet en Next.js */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  border-radius: inherit;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
