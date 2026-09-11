@@ -7,21 +7,36 @@ import L from 'leaflet'
 // Coordenadas fijas en Santiago del Estero Capital
 const SGO_CENTER = { lat: -27.7833, lng: -64.2667 }
 
+// 🎯 Marcador personalizado con animación de pulso / titileo
 const customIcon = (color: string) =>
     L.divIcon({
         className: 'custom-leaflet-marker',
         html: `
-      <div style="
-        background-color: ${color};
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 0 12px ${color};
-      "></div>
+      <div style="position: relative; width: 24px; height: 24px; display: flex; items-center: center; justify-content: center;">
+        <!-- Anillo animado que titila / se expande -->
+        <span style="
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: ${color};
+          opacity: 0.75;
+          animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        "></span>
+        <!-- Punto central fijo con sombra -->
+        <span style="
+          position: relative;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: ${color};
+          border: 2.5px solid white;
+          box-shadow: 0 0 10px ${color};
+        "></span>
+      </div>
     `,
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
     })
 
 // Re-evalúa los límites reales del DOM apenas se monta
@@ -66,19 +81,17 @@ export default function MapReal({ professionals }: ProfessionalMapProps) {
             <MapContainer
                 center={[userCoords.lat, userCoords.lng]}
                 zoom={13}
-                zoomControl={false} // Desactivado para estética limpia en celular
+                zoomControl={false}
                 scrollWheelZoom={true}
                 style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}
             >
                 <MapController />
 
-                {/* Tiles libres y limpios de OpenStreetMap */}
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/* Radio de cobertura */}
                 <Circle
                     center={[userCoords.lat, userCoords.lng]}
                     radius={2000}
@@ -90,7 +103,6 @@ export default function MapReal({ professionals }: ProfessionalMapProps) {
                     }}
                 />
 
-                {/* Marcadores */}
                 {professionals.map((prof) => (
                     <Marker
                         key={prof.id}

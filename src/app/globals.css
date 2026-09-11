@@ -31,12 +31,28 @@
   /* emerald-50 (Fondos sutiles de radares/banners) */
 }
 
+/* Animación de pulso/radar para los marcadores del mapa */
+@keyframes ping {
+
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
 /* Corrección de renderizado completo para Leaflet en Next.js */
 .leaflet-container {
   width: 100% !important;
   height: 100% !important;
   z-index: 0 !important;
   border-radius: inherit;
+}
+
+/* Limpieza de contenedor de íconos personalizados de Leaflet */
+.custom-leaflet-marker {
+  background: transparent !important;
+  border: none !important;
 }
 
 @theme inline {
