@@ -1,13 +1,34 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { esES } from "@clerk/localizations";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Plataforma de Salud Mental",
-  description: "Conectando pacientes y profesionales en 30 minutos.",
+  title: "Conta YA! - Plataforma de Salud Mental",
+  description: "Conectando pacientes y profesionales de la salud mental en tiempo real.",
+};
+
+const customSpanish = {
+  ...esES,
+  signIn: {
+    ...esES.signIn,
+    start: {
+      ...esES.signIn?.start,
+      actionText: "¿Aún no tenés cuenta?",
+      actionLink: "Registrarme",
+    },
+  },
+  signUp: {
+    ...esES.signUp,
+    start: {
+      ...esES.signUp?.start,
+      actionText: "¿Ya tenés cuenta?",
+      actionLink: "Iniciar sesión",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +37,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      localization={customSpanish}
+      appearance={{
+        variables: {
+          colorPrimary: "#064e3b",   // emerald-900
+          colorBackground: "#ffffff", // Blanco para tarjetas
+          colorNeutral: "#0e1713",    // Texto y bordes neutros
+          borderRadius: "1rem",       // 16px
+        },
+        elements: {
+          formFieldInput: "bg-slate-50 border-slate-200 text-slate-900 focus:border-emerald-800",
+        },
+      }}
+    >
       <html lang="es">
         <body className={inter.className}>{children}</body>
       </html>

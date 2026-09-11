@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fondo principal y superficie secundaria */
+  --background: #f8faf9;
+  /* Blanco con tinte neutro/verde imperceptible */
+  --surface: #ffffff;
+  /* Blanco puro para cards principales */
+  --surface-border: #e2e8f0;
+  /* slate-200 / Bordes definidos */
+
+  /* Textos */
+  --foreground: #0e1713;
+  /* Oscuro verdoso/slate casi negro */
+  --muted-foreground: #52635a;
+  /* Gris medio verdoso para descripciones */
+
+  /* Colores Primarios (Verde Institucional / Esmeralda Profundo) */
+  --primary: #064e3b;
+  /* emerald-900 (Verde oscuro de la marca) */
+  --primary-hover: #022c22;
+  /* emerald-950 */
+  --primary-foreground: #ffffff;
+
+  /* Colores de Acento y Badges (Verde Menta Pálido) */
+  --accent: #dcfce7;
+  /* emerald-100 (Fondo suave para checks/alertas) */
+  --accent-foreground: #065f46;
+  /* emerald-800 (Texto sobre fondo menta) */
+  --accent-muted: #f0fdf4;
+  /* emerald-50 (Fondos sutiles de radares/banners) */
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-muted: var(--muted-foreground);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-foreground);
+  --color-accent-muted: var(--accent-muted);
+
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }

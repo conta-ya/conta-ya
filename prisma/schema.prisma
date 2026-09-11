@@ -51,6 +51,10 @@ model Profile {
   clerkId   String   @unique
   email     String   @unique
   fullName  String
+  documentId String?
+  birthday        DateTime?
+  gender  String?
+  healthInsurance String?
   role      Role     @default(PATIENT)
   avatarUrl String?
   phone     String?
