@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { UserButton, useAuth } from '@clerk/nextjs'
-import { HeartPulse, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -14,13 +15,21 @@ export default function Navbar() {
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-900 flex items-center justify-center shadow-md shadow-emerald-900/10">
-                        <HeartPulse className="w-6 h-6 text-white" />
+
+                {/* Logo Principal (Sin contenedor y 3x más grande) */}
+                <Link href="/" className="flex items-center gap-3 group">
+                    <div className="relative w-28 h-[52px] shrink-0">
+                        <Image
+                            src="/conta-ya-l.jpg"
+                            alt="Conta YA! Logo"
+                            fill
+                            sizes="112px"
+                            className="object-contain p-0.5 transition-transform group-hover:scale-105"
+                            priority
+                        />
                     </div>
                     <span className="text-xl font-bold tracking-tight text-slate-900">
-                        Conta<span className="text-emerald-900">YA!</span>
+                        Conta <span className="text-emerald-900">- YA!</span>
                     </span>
                 </Link>
 

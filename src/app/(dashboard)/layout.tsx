@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { UserButton } from '@clerk/nextjs'
-import { LayoutDashboard, Search, User, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Search, User, Menu, X, ShieldCheck } from 'lucide-react'
 import 'leaflet/dist/leaflet.css'
 
-export default function DashboardLayout({
+export default function AuthenticatedAppLayout({
     children,
 }: {
     children: React.ReactNode
@@ -17,17 +18,26 @@ export default function DashboardLayout({
 
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
-            {/* Navbar Superior del Dashboard */}
+            {/* Navbar Superior Unificado para la App */}
             <header className="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
 
-                    {/* Logo y Nombre App */}
-                    <div className="flex items-center gap-8">
-                        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg tracking-tight text-slate-900">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-900">
-                                💚
+                    {/* Logo con Imagen Directa */}
+                    <div className="flex items-center gap-6 md:gap-8">
+                        <Link href="/dashboard" className="flex items-center gap-3 group">
+                            <div className="relative w-28 h-[48px] shrink-0">
+                                <Image
+                                    src="/conta-ya-l.jpg"
+                                    alt="Conta YA! Logo"
+                                    fill
+                                    sizes="112px"
+                                    className="object-contain p-0.5 transition-transform group-hover:scale-105"
+                                    priority
+                                />
                             </div>
-                            <span>Conta<span className="text-emerald-900">YA!</span></span>
+                            <span className="hidden sm:inline-block text-xl font-bold tracking-tight text-slate-900">
+                                Conta<span className="text-emerald-900">YA!</span>
+                            </span>
                         </Link>
 
                         {/* Enlaces de Navegación Desktop */}
@@ -53,7 +63,7 @@ export default function DashboardLayout({
                         </nav>
                     </div>
 
-                    {/* Menú de Usuario y Botón Hamburguesa Móvil */}
+                    {/* Menú de Usuario y Hamburguesa Móvil */}
                     <div className="flex items-center gap-3">
                         <UserButton
                             appearance={{
